@@ -8,7 +8,7 @@ describe('Recur Examples', function() {
     it('At 11:30am on March 21, 2013', function() {
       later.date.UTC();
 
-      var sched = later.parse.recur().on(new Date('2013-03-21T11:30:00')).fullDate();
+      var sched = later.parse.recur().on(new Date('2013-03-21T11:30:00Z')).fullDate();
 
       var start = new Date('2013-03-11T03:05:23Z'),
           end = new Date('2013-04-21T03:40:10Z'),
@@ -45,14 +45,14 @@ describe('Recur Examples', function() {
       var start = new Date('2013-03-21T03:05:23Z'),
           end = new Date('2013-03-21T03:40:10Z'),
           expected = [
-            new Date('2013-03-21T03:05:23'),
-            new Date('2013-03-21T03:10:00'),
-            new Date('2013-03-21T03:15:00'),
-            new Date('2013-03-21T03:20:00'),
-            new Date('2013-03-21T03:25:00'),
-            new Date('2013-03-21T03:30:00'),
-            new Date('2013-03-21T03:35:00'),
-            new Date('2013-03-21T03:40:00')
+            new Date('2013-03-21T03:05:23Z'),
+            new Date('2013-03-21T03:10:00Z'),
+            new Date('2013-03-21T03:15:00Z'),
+            new Date('2013-03-21T03:20:00Z'),
+            new Date('2013-03-21T03:25:00Z'),
+            new Date('2013-03-21T03:30:00Z'),
+            new Date('2013-03-21T03:35:00Z'),
+            new Date('2013-03-21T03:40:00Z')
           ];
 
       var next = later.schedule(sched).next(8, start, end);

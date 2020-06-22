@@ -3,12 +3,7 @@ TESTS ?= $(shell find test -name "*-test.js")
 
 all: \
 	later.js \
-	later.min.js \
 	later-core.js \
-	later-core.min.js \
-	component.json \
-	bower.json \
-	package.json
 
 .PHONY: clean all test test-cov
 
@@ -38,7 +33,9 @@ later-cov.js: later.js
 	@chmod a-w $@
 
 benchmark: all
-	@echo 'Constraints --------'
+	@echo 'Add --------'
+	@node benchmark/constraint/val-bench.js
+	@echo 'Next --------'
 	@node benchmark/constraint/next-bench.js
 	@echo 'Schedules --------'
 	@node benchmark/core/schedule-bench.js
@@ -65,16 +62,3 @@ component.json: src/component.js later.js
 	@rm -f $@
 	node src/component.js > $@
 	@chmod a-w $@
-
-package.json: src/package.js later.js
-	@rm -f $@
-	node src/package.js > $@
-	@chmod a-w $@
-
-bower.json: src/bower.js later.js
-	@rm -f $@
-	node src/bower.js > $@
-	@chmod a-w $@
-
-clean:
-	rm -f later*.js package.json component.json bower.json

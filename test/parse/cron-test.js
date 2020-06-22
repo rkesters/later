@@ -340,7 +340,6 @@ describe('Parse Cron', function() {
 
 		it('should parse last', function() {
 			var p = parse('* * * * * 5L', true);
-			console.dir(p.schedules)
 			p.schedules[0].should.eql({d: [6], dc: [0]});
 		});
 
@@ -359,7 +358,6 @@ describe('Parse Cron', function() {
 
 		it('should parse multiple last', function() {
 			var p = parse('* * * * * 4L,5L', true);
-			console.dir(p.schedules)
 			p.schedules[0].should.eql({d: [5], dc: [0]});
 			p.schedules[1].should.eql({d: [6], dc: [0]});
 		});

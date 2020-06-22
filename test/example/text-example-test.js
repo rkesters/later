@@ -11,11 +11,11 @@ describe('Text Examples', function() {
     var start = new Date('2013-03-21T03:05:23Z'),
         end = new Date('2013-03-26T03:40:10Z'),
         expected = [
-          new Date('2013-03-21T12:00:00'),
-          new Date('2013-03-22T12:00:00'),
-          new Date('2013-03-23T12:00:00'),
-          new Date('2013-03-24T12:00:00'),
-          new Date('2013-03-25T12:00:00')
+          new Date('2013-03-21T12:00:00Z'),
+          new Date('2013-03-22T12:00:00Z'),
+          new Date('2013-03-23T12:00:00Z'),
+          new Date('2013-03-24T12:00:00Z'),
+          new Date('2013-03-25T12:00:00Z')
         ];
 
     var next = later.schedule(sched).next(5, start, end);
@@ -37,11 +37,11 @@ describe('Text Examples', function() {
     var start = new Date('2013-03-21T03:05:23Z'),
         end = new Date('2013-03-26T03:40:10Z'),
         expected = [
-          new Date('2013-03-21T10:15:00'),
-          new Date('2013-03-22T10:15:00'),
-          new Date('2013-03-23T10:15:00'),
-          new Date('2013-03-24T10:15:00'),
-          new Date('2013-03-25T10:15:00')
+          new Date('2013-03-21T10:15:00Z'),
+          new Date('2013-03-22T10:15:00Z'),
+          new Date('2013-03-23T10:15:00Z'),
+          new Date('2013-03-24T10:15:00Z'),
+          new Date('2013-03-25T10:15:00Z')
         ];
 
     var next = later.schedule(sched).next(5, start, end);

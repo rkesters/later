@@ -20,12 +20,27 @@
  * @api public
  */
 later.parse.cron = function (expr, hasSeconds) {
-
     // Constant array to convert valid names to values
     var NAMES = {
-        JAN: 1, FEB: 2, MAR: 3, APR: 4, MAY: 5, JUN: 6, JUL: 7, AUG: 8,
-        SEP: 9, OCT: 10, NOV: 11, DEC: 12,
-        SUN: 1, MON: 2, TUE: 3, WED: 4, THU: 5, FRI: 6, SAT: 7
+        JAN: 1,
+        FEB: 2,
+        MAR: 3,
+        APR: 4,
+        MAY: 5,
+        JUN: 6,
+        JUL: 7,
+        AUG: 8,
+        SEP: 9,
+        OCT: 10,
+        NOV: 11,
+        DEC: 12,
+        SUN: 1,
+        MON: 2,
+        TUE: 3,
+        WED: 4,
+        THU: 5,
+        FRI: 6,
+        SAT: 7,
     };
 
     // Parsable replacements for common expressions
@@ -36,18 +51,18 @@ later.parse.cron = function (expr, hasSeconds) {
         '@MONTHLY': '0 0 1 * *',
         '@WEEKLY': '0 0 * * 0',
         '@DAILY': '0 0 * * *',
-        '@HOURLY': '0 * * * *'
+        '@HOURLY': '0 * * * *',
     };
 
     // Contains the index, min, and max for each of the constraints
     var FIELDS = {
-        s: [0, 0, 59],      // seconds
-        m: [1, 0, 59],      // minutes
-        h: [2, 0, 23],      // hours
-        D: [3, 1, 31],      // day of month
-        M: [4, 1, 12],      // month
+        s: [0, 0, 59], // seconds
+        m: [1, 0, 59], // minutes
+        h: [2, 0, 23], // hours
+        D: [3, 1, 31], // day of month
+        M: [4, 1, 12], // month
         Y: [6, 1970, 2099], // year
-        d: [5, 1, 7, 1]     // day of week
+        d: [5, 1, 7, 1], // day of week
     };
 
     /**
@@ -69,7 +84,8 @@ later.parse.cron = function (expr, hasSeconds) {
      * @param {Sched} sched: The schedule that will be cloned
      */
     function cloneSchedule(sched) {
-        var clone = {}, field;
+        var clone = {},
+            field;
 
         for (field in sched) {
             if (field !== 'dc' && field !== 'd') {
@@ -98,11 +114,11 @@ later.parse.cron = function (expr, hasSeconds) {
         }
 
         //console.log( 'name : ' + name  + ' ' + min + ' ' + max + ' ' +inc);
-        if (name === 'd' && (sched.dc && sched.dc.length > 0)) {
+        if (name === 'd' && sched.dc && sched.dc.length > 0) {
             schedules.push(cloneSchedule(sched));
             sched = schedules[schedules.length - 1];
             delete sched.dc;
-            sched[name] = sched[name] ? sched[name] : []
+            sched[name] = sched[name] ? sched[name] : [];
         }
 
         while (i <= max) {
@@ -115,6 +131,8 @@ later.parse.cron = function (expr, hasSeconds) {
         sched[name].sort(function (a, b) {
             return a - b;
         });
+
+        return schedules[schedules.length - 1];
     }
 
     /**
@@ -129,40 +147,44 @@ later.parse.cron = function (expr, hasSeconds) {
         // if there are any existing day of week constraints that
         // aren't equal to the one we're adding, create a new
         // composite schedule
-        if ((curSched.d && !curSched.dc) ||
-            (curSched.dc && !curSched.dc.includes(hash))) {
+        if ((curSched.d && !curSched.dc) || (curSched.dc && !curSched.dc.includes(hash))) {
             schedules.push(cloneSchedule(curSched));
             curSched = schedules[schedules.length - 1];
         }
 
-        add(schedules, curSched, 'd', value, value);
-        add(schedules, curSched, 'dc', hash, hash);
+        curSched = add(schedules, curSched, 'd', value, value);
+        curSched = add(schedules, curSched, 'dc', hash, hash);
+
+        return curSched;
     }
 
     function addWeekday(schedules, s, curSched, value) {
-        var except1 = {}, except2 = {};
+        var except1 = {},
+            except2 = {};
         if (value === 1) {
             // cron doesn't pass month boundaries, so if 1st is a
             // weekend then we need to use 2nd or 3rd instead
-            add(schedules, curSched, 'D', 1, 3);
-            add(schedules, curSched, 'd', NAMES.MON, NAMES.FRI);
-            add(schedules, except1, 'D', 2, 2);
-            add(schedules, except1, 'd', NAMES.TUE, NAMES.FRI);
-            add(schedules, except2, 'D', 3, 3);
-            add(schedules, except2, 'd', NAMES.TUE, NAMES.FRI);
+            curSched = add(schedules, curSched, 'D', 1, 3);
+            curSched = add(schedules, curSched, 'd', NAMES.MON, NAMES.FRI);
+            curSched = add(schedules, except1, 'D', 2, 2);
+            curSched = add(schedules, except1, 'd', NAMES.TUE, NAMES.FRI);
+            curSched = add(schedules, except2, 'D', 3, 3);
+            curSched = add(schedules, except2, 'd', NAMES.TUE, NAMES.FRI);
         } else {
             // normally you want the closest day, so if v is a
             // Saturday, use the previous Friday.  If it's a
             // sunday, use the following Monday.
-            add(schedules, curSched, 'D', value - 1, value + 1);
-            add(schedules, curSched, 'd', NAMES.MON, NAMES.FRI);
-            add(schedules, except1, 'D', value - 1, value - 1);
-            add(schedules, except1, 'd', NAMES.MON, NAMES.THU);
-            add(schedules, except2, 'D', value + 1, value + 1);
-            add(schedules, except2, 'd', NAMES.TUE, NAMES.FRI);
+            curSched = add(schedules, curSched, 'D', value - 1, value + 1);
+            curSched = add(schedules, curSched, 'd', NAMES.MON, NAMES.FRI);
+            curSched = add(schedules, except1, 'D', value - 1, value - 1);
+            curSched = add(schedules, except1, 'd', NAMES.MON, NAMES.THU);
+            curSched = add(schedules, except2, 'D', value + 1, value + 1);
+            curSched = add(schedules, except2, 'd', NAMES.TUE, NAMES.FRI);
         }
         s.exceptions.push(except1);
         s.exceptions.push(except2);
+
+        return curSched;
     }
 
     /**
@@ -175,7 +197,7 @@ later.parse.cron = function (expr, hasSeconds) {
      * @param {Int} max: The max value for the constraint
      * @param {Int} offset: The offset to apply to the cron value
      */
-    function addRange(schedules,item, curSched, name, min, max, offset) {
+    function addRange(schedules, item, curSched, name, min, max, offset) {
         // parse range/x
         var incSplit = item.split('/'),
             inc = +incSplit[1],
@@ -190,7 +212,9 @@ later.parse.cron = function (expr, hasSeconds) {
             max = getValue(rangeSplit[1], offset, max) || max;
         }
 
-        add(schedules,curSched, name, min, max, inc);
+        curSched = add(schedules, curSched, name, min, max, inc);
+
+        return curSched;
     }
 
     /**
@@ -216,24 +240,24 @@ later.parse.cron = function (expr, hasSeconds) {
 
         // parse x
         if ((value = getValue(item, offset, max)) !== null) {
-            add(schedules, curSched, name, value, value);
+            curSched = add(schedules, curSched, name, value, value);
         }
         // parse xW
         else if ((value = getValue(item.replace('W', ''), offset, max)) !== null) {
-            addWeekday(schedules,s, curSched, value);
+            addWeekday(schedules, s, curSched, value);
         }
         // parse xL
         else if ((value = getValue(item.replace('L', ''), offset, max)) !== null) {
-            addHash(schedules, curSched, value, min - 1);
+            curSched = addHash(schedules, curSched, value, min - 1);
         }
         // parse x#y
         else if ((split = item.split('#')).length === 2) {
             value = getValue(split[0], offset, max);
-            addHash(schedules, curSched, value, getValue(split[1]));
+            curSched = addHash(schedules, curSched, value, getValue(split[1]));
         }
         // parse x-y or x-y/z or */z or 0/z
         else {
-            addRange(schedules,item, curSched, name, min, max, offset);
+            curSched = addRange(schedules, item, curSched, name, min, max, offset);
         }
     }
 
@@ -246,7 +270,6 @@ later.parse.cron = function (expr, hasSeconds) {
         return item.indexOf('#') > -1 || item.indexOf('L') > 0;
     }
 
-
     function itemSorter(a, b) {
         return isHash(a) && !isHash(b) ? 1 : a - b;
     }
@@ -258,9 +281,12 @@ later.parse.cron = function (expr, hasSeconds) {
      * @param {String} expr: The cron expression to parse
      */
     function parseExpr(expr) {
-        var schedule = {schedules: [{}], exceptions: []},
+        var schedule = { schedules: [{}], exceptions: [] },
             components = expr.replace(/(\s)+/g, ' ').split(' '),
-            field, f, component, items;
+            field,
+            f,
+            component,
+            items;
 
         for (field in FIELDS) {
             f = FIELDS[field];
@@ -270,7 +296,8 @@ later.parse.cron = function (expr, hasSeconds) {
                 // schedule clones to handle # won't contain all of the
                 // other constraints
                 items = component.split(',').sort(itemSorter);
-                var i, length = items.length;
+                var i,
+                    length = items.length;
                 for (i = 0; i < length; i++) {
                     parse(items[i], schedule, field, f[1], f[2], f[3]);
                 }
