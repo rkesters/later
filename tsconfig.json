@@ -1,14 +1,15 @@
 {
     "compilerOptions": {
         "outDir": "./dist/",
+        "rootDir": "./src",
         "strict": true,
-        "module": "es6",
-        "target": "es5",
-        "jsx": "react",
+        "module": "commonjs",
+        "target": "es6",
         "allowJs": false,
         "sourceMap": true,
         "allowSyntheticDefaultImports": true,
-        "moduleResolution": "Node"
+        "moduleResolution": "Node",
+        "declaration": true,
     },
-    "exclude": ["webpack.config.ts"]
+    "exclude": ["./dist"]
 }

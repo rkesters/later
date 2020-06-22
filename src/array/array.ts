@@ -1,6 +1,6 @@
-later.array = {
-    next(val, values, extent) {
-        let cur,
+export const array: ILaterArray = {
+    next<T extends number>(val: T, values: T[], extent: T[]) {
+        let cur: T,
             zeroIsLargest = extent[0] !== 0,
             nextIdx = 0;
 
@@ -21,7 +21,7 @@ later.array = {
 
         return values[nextIdx];
     },
-    nextInvalid(val, values, extent) {
+    nextInvalid<T extends number>(val: T, values: T[], extent: T[]) {
         let min = extent[0],
             max = extent[1],
             len = values.length,
@@ -48,7 +48,7 @@ later.array = {
 
         return next;
     },
-    prev(val, values, extent) {
+    prev<T extends number>(val: T, values: T[], extent: T[]) {
         var cur,
             len = values.length,
             zeroIsLargest = extent[0] !== 0,
@@ -71,7 +71,7 @@ later.array = {
 
         return values[prevIdx];
     },
-    prevInvalid(val, values, extent) {
+    prevInvalid<T extends number>(val: T, values: T[], extent: T[]) {
         var min = extent[0],
             max = extent[1],
             len = values.length,
@@ -99,13 +99,14 @@ later.array = {
 
         return next;
     },
-    sort(arr, zeroIsLast) {
+    sort<T extends number>(arr: T[], zeroIsLast: boolean) {
         arr.sort(function (a, b) {
             return +a - +b;
         });
 
         if (zeroIsLast && arr[0] === 0) {
-            arr.push(arr.shift());
+            arr.push(<T>arr.shift());
         }
     },
 };
+later.array = array;

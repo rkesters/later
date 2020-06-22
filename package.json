@@ -1,39 +1,36 @@
 {
-    "name": "later",
-    "version": "1.2.0",
+    "name": "@rkesters/later",
+    "version": "1.0.0-1",
     "description": "Determine later (or previous) occurrences of recurring schedules",
     "keywords": [
         "schedule",
         "occurrences",
         "recur",
-        "cron"
+        "cron",
+        "typescript"
     ],
-    "author": "BunKat <bill@levelstory.com>",
+    "author": "Robert Kesterson <rkesters@gmail.com>",
     "repository": {
         "type": "git",
-        "url": "git://github.com/bunkat/later.git"
+        "url": "git://github.com/rkesters/later.git"
     },
-    "main": "index.js",
-    "browserify": "index-browserify.js",
-    "jam": {
-        "main": "later.js",
-        "shim": {
-            "exports": "later"
-        }
-    },
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "devDependencies": {
-        "benchmark": "*",
+        "@types/lodash": "^4.14.156",
+        "benchmark": "latest",
         "del-cli": "^3.0.1",
-        "jslint": "*",
-        "mocha": "*",
+        "mocha": "latest",
         "prettier": "^2.0.5",
         "should": ">=0.6.3",
-        "smash": "~0.0.8",
-        "uglify-js": "*"
+        "typescript": "^3.9.5"
     },
     "license": "MIT",
     "scripts": {
         "test": "./node_modules/.bin/mocha test/**/*-test.js --reporter dot",
-        "clean": "npx del-cli later*.js component.json bower.json"
+        "clean": "npx del-cli later*.js component.json bower.json dist"
+    },
+    "dependencies": {
+        "lodash": "^4.17.15"
     }
 }
