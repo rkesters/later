@@ -10,20 +10,17 @@
  *     http://github.com/bunkat/later
  */
 
+ import * as _ from 'lodash'
 
-export interface ISchedule {
-    schedules: ICompiledSchedule[];
-    exceptions: ICompiledSchedule[];
-}
 
-function schedule(scheduled: ISchedule) {
+export function schedule(scheduled: ISchedule):IScheduleResult {
     if (!scheduled) throw new Error('Missing schedule definition.');
     if (!scheduled.schedules) throw new Error('Definition must include at least one schedule.');
 
     // compile the schedule components
-    const schedules: IScheduleDef[] = [],
+    const schedules: ICompiledSchedule[] = [],
         schedulesLen = scheduled.schedules.length,
-        exceptions: IScheduleDef[] = [],
+        exceptions: ICompiledSchedule[] = [],
         exceptionsLen = scheduled.exceptions ? scheduled.exceptions.length : 0;
 
     for (let i = 0; i < schedulesLen; i++) {
@@ -48,16 +45,16 @@ function schedule(scheduled: ISchedule) {
         dir: DIRECTION,
         count: number,
         startDate: LaterDate,
-        endDate: LaterDate,
+        endDate?: LaterDate,
         isRange: boolean = false,
     ) {
         let compare = compareFn(dir), // encapsulates difference between directions
             loopCount = count,
             maxAttempts = 1000,
             schedStarts: LaterDate[] = [],
-            exceptStarts: LaterDate[] = [],
+            exceptStarts: LaterDate[][] = [],
             next,
-            end,
+            end: LaterDate | undefined,
             results: Array<Date | Array<Date | undefined> | undefined> = [],
             isForward = dir === 'next',
             lastResult,
@@ -215,7 +212,7 @@ function schedule(scheduled: ISchedule) {
     function setRangeStarts(
         dir: DIRECTION,
         schedArr: ICompiledSchedule[],
-        rangesArr: Array<number | LaterDate[]>,
+        rangesArr: Array<number | LaterDate[] | LaterDate>,
         startDate: LaterDate,
     ) {
         var compare = compareFn(dir);
@@ -244,7 +241,7 @@ function schedule(scheduled: ISchedule) {
     function updateRangeStarts(
         dir: DIRECTION,
         schedArr: ICompiledSchedule[],
-        rangesArr: Array<number | LaterDate[]>,
+        rangesArr: Array<number | LaterDate[] | LaterDate>,
         startDate: LaterDate,
     ) {
         const compare = compareFn(dir);
@@ -302,7 +299,7 @@ function schedule(scheduled: ISchedule) {
         schedArr: ICompiledSchedule[],
         startsArr: LaterDate[],
         startDate: LaterDate,
-        minEndDate: LaterDate,
+        minEndDate?: LaterDate,
     ) {
         let result;
 
@@ -340,11 +337,14 @@ function schedule(scheduled: ISchedule) {
         startDate: LaterDate,
     ) {
         let compare = compareFn(dir),
-            result;
+            result: LaterDate | undefined;
 
-        let i = 0, len = rangesArr.length;
+        let i = 0,
+            len = rangesArr.length;
         for (; i < len; i++) {
-            if (!_.isArray(rangesArr[i])) {continue;}
+            if (!_.isArray(rangesArr[i])) {
+                continue;
+            }
             const range: LaterDate[] = rangesArr[i] as LaterDate[];
 
             if (
@@ -369,12 +369,16 @@ function schedule(scheduled: ISchedule) {
      * @param {Array} exceptsArr: The set of cached exception ranges
      * @param {Array} compare: The compare function to use to determine earliest
      */
-    function calcMaxEndDate(exceptsArr: LaterDate[][], compare: (a: Date, b: Date) => boolean ): LaterDate | undefined {
-        let result:LaterDate | undefined = undefined;
+    function calcMaxEndDate(
+        exceptsArr: LaterDate[][],
+        compare: (a: Date, b: Date) => boolean,
+    ): LaterDate | undefined {
+        let result: LaterDate | undefined = undefined;
 
-        let i = 0, len = exceptsArr.length;
+        let i = 0,
+            len = exceptsArr.length;
         for (; i < len; i++) {
-            if (exceptsArr[i] && (result && compare(result, exceptsArr[i][0]))) {
+            if (exceptsArr[i] && result && compare(result, exceptsArr[i][0])) {
                 result = exceptsArr[i][0];
             }
         }
@@ -394,13 +398,13 @@ function schedule(scheduled: ISchedule) {
      */
     function calcEnd(
         dir: DIRECTION,
-        schedArr: IScheduleDef[],
+        schedArr: ICompiledSchedule[],
         startsArr: LaterDate[],
-        startDate: Date,
-        maxEndDate: Date,
-    ) {
+        startDate: LaterDate,
+        maxEndDate?: LaterDate,
+    ): LaterDate | undefined {
         let compare = compareFn(dir),
-            result;
+            result: LaterDate | undefined;
 
         let i = 0,
             len = schedArr.length;
@@ -408,7 +412,7 @@ function schedule(scheduled: ISchedule) {
             const start = startsArr[i];
 
             if (start && start.getTime() === startDate.getTime()) {
-                const end: Date = schedArr[i].end(dir, start);
+                const end: LaterDate = schedArr[i].end(dir, start);
 
                 // if the end date is past the maxEndDate, just return the maxEndDate
                 if (maxEndDate && (!end || compare(end, maxEndDate))) {
@@ -483,7 +487,7 @@ function schedule(scheduled: ISchedule) {
          * @param {Date} startDate: The earliest a valid instance can occur
          * @param {Date} endDate: The latest a valid instance can occur
          */
-        next: function (count: number, startDate: LaterDate, endDate: LaterDate) {
+        next: function (count: number, startDate: LaterDate, endDate?: LaterDate) {
             return getInstances('next', count || 1, startDate, endDate);
         },
 

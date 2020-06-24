@@ -28,7 +28,7 @@ function after(constraint: IConstraint, values: any[]): IConstraint {
          * @param {Date} d: The date to check the value on
          * @param {Integer} val: The value to validate
          */
-        isValid: function (d: IConstraintStruct, val: number) {
+        isValid: function (d: LaterDate, val: number) {
             return this.val(d) >= value;
         },
 
@@ -50,7 +50,7 @@ function after(constraint: IConstraint, values: any[]): IConstraint {
         /**
          * Pass through to the constraint.
          */
-        next: function (startDate: IConstraintStruct, val: number) {
+        next: function (startDate: LaterDate, val: number) {
             if (val != value) val = constraint.extent(startDate)[0];
             return constraint.next(startDate, val);
         },
@@ -58,7 +58,7 @@ function after(constraint: IConstraint, values: any[]): IConstraint {
         /**
          * Pass through to the constraint.
          */
-        prev: function (startDate: IConstraintStruct, val: number) {
+        prev: function (startDate: LaterDate, val: number) {
             val = val === value ? constraint.extent(startDate)[1] : value - 1;
             return constraint.prev(startDate, val);
         },

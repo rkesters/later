@@ -9,7 +9,7 @@
 * For all details and documentation:
 *     http://github.com/bunkat/later
 */
-const t:IConstraint = {
+export const t:IConstraint = {
 
   /**
   * The name of this constraint.
@@ -118,4 +118,5 @@ const t:IConstraint = {
 
 };
 
+export const time  =t;
 later.time = later.t =t;

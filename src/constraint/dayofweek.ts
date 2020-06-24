@@ -8,7 +8,7 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
-const dayOfWeek: IConstraint = {
+export const dayOfWeek: IConstraint = {
     /**
      * The name of this constraint.
      */
@@ -98,4 +98,6 @@ const dayOfWeek: IConstraint = {
     },
 };
 
+export const d = dayOfWeek;
+export const dw = dayOfWeek;
 later.dayOfWeek = later.dw = later.d = dayOfWeek;

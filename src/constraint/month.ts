@@ -8,7 +8,7 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
-const M: IConstraint = {
+export const M: IConstraint = {
     /**
      * The name of this constraint.
      */
@@ -90,4 +90,5 @@ const M: IConstraint = {
     },
 };
 
+export const month = M;
 later.month = later.M = M;

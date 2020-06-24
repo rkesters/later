@@ -9,7 +9,7 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
-const dc: IConstraint = {
+export const dc: IConstraint = {
     /**
      * The name of this constraint.
      */
@@ -134,4 +134,5 @@ const dc: IConstraint = {
     },
 };
 
+export const dayOfWeekCount = dc;
 later.dayOfWeekCount = later.dc = dc;

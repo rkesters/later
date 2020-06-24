@@ -10,6 +10,7 @@
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "Node",
         "declaration": true,
+        "lib": ["ES2017"]
     },
     "exclude": ["./dist"]
 }

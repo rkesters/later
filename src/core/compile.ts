@@ -12,8 +12,13 @@
 
 import * as _ from 'lodash';
 
+interface ICompileConstraint {
+    vals: number[];
+    constraint: IConstraint;
+}
+
 export function compile(schedDef: IScheduleDef): ICompiledSchedule {
-    let constraints: { constraint: IConstraint; vals: number[] }[] = [],
+    let constraints: ICompileConstraint[] = [],
         constraintsLen = 0,
         tickConstraint: IConstraint;
 
@@ -109,19 +114,16 @@ export function compile(schedDef: IScheduleDef): ICompiledSchedule {
          * @param {Date} startDate: The first possible valid occurrence
          */
         end: function (dir: 'next' | 'prev', startDate: LaterDate): LaterDate {
-            let result: LaterDate,
+            let result: LaterDate | null = null,
                 nextVal = dir === 'next' ? later.array.nextInvalid : later.array.prevInvalid,
                 compare = compareFn(dir);
 
-            for (let i = constraintsLen - 1; i >= 0; i--) {
+            return (
                 constraints.reduce(
-                    (
-                        result: LaterDate,
-                        constraint: { constraint: IConstraint; vals: number[] },
-                    ) => {
+                    (result: LaterDate | null, { constraint, vals }: ICompileConstraint) => {
                         let curVal = constraint.val(startDate),
                             extent = constraint.extent(startDate),
-                            newVal = nextVal(curVal, constraint.vals, extent),
+                            newVal = nextVal(curVal, vals, extent),
                             next;
 
                         if (newVal !== undefined) {
@@ -134,12 +136,12 @@ export function compile(schedDef: IScheduleDef): ICompiledSchedule {
                                 result = next;
                             }
                         }
+
+                        return result;
                     },
                     null,
-                );
-            }
-
-            return result;
+                ) || later.NEVER
+            );
         },
 
         /**
@@ -149,7 +151,7 @@ export function compile(schedDef: IScheduleDef): ICompiledSchedule {
          * @param {Date} date: The start date to tick from
          */
         tick: function (dir: 'next' | 'prev', date: LaterDate) {
-            return new Date(
+            return new LaterDate(
                 dir === 'next'
                     ? tickConstraint.end(date).getTime() + later.SEC
                     : tickConstraint.start(date).getTime() - later.SEC,

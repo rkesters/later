@@ -133,7 +133,7 @@ export const parse: IParse = {
              * @param {Int} args: One or more valid instances
              * @api public
              */
-            on: function (...args: [number, number, number, number]) {
+            on: function (...args: (string | number)[]) {
                 values = args;
                 return this;
             },
@@ -149,8 +149,8 @@ export const parse: IParse = {
              * @param {Int} x: Recurring interval
              * @api public
              */
-            every: function (x: number) {
-                every = x || 1;
+            every: function (x: string) {
+                every = parseInt(x, 10) || 1;
                 return this;
             },
 
@@ -163,9 +163,9 @@ export const parse: IParse = {
              * @param {Int} x: Recurring interval
              * @api public
              */
-            after: function (x: number) {
+            after: function (x: string) {
                 modifier = 'a';
-                values = [x];
+                values = [parseInt(x, 10)];
                 return this;
             },
 
@@ -178,9 +178,9 @@ export const parse: IParse = {
              * @param {Int} x: Recurring interval
              * @api public
              */
-            before: function (x: number) {
+            before: function (x: string) {
                 modifier = 'b';
-                values = [x];
+                values = [parseInt(x, 10)];
                 return this;
             },
 
@@ -474,7 +474,7 @@ export const parse: IParse = {
              * @api public
              */
             customPeriod: function (id: keyof ILaterGlobalIndex) {
-                const custom: IConstraint | undefined = later[id] as (IConstraint | undefined);
+                const custom: IConstraint | undefined = later[id] as IConstraint | undefined;
                 if (!custom) throw new Error('Custom time period ' + id + ' not recognized!');
 
                 add(id, custom.extent(new LaterDate())[0], custom.extent(new LaterDate())[1]);
@@ -620,8 +620,8 @@ export const parse: IParse = {
          *
          * @param {Sched} schedule: The schedule that will be cloned
          */
-        function cloneSchedule(schedule: LaterDate): LaterDate {
-            return Object(schedule).reduce((clone: LaterDate, field: string) => {
+        function cloneSchedule(schedule: IScheduleDef): IScheduleDef {
+            return Object(schedule).reduce((clone: IScheduleDef, field: string) => {
                 if (field !== 'dc' && field !== 'd') {
                     _.assign(clone, field, _.get(schedule, field));
                 }
@@ -639,9 +639,9 @@ export const parse: IParse = {
          * @param {Int} inc: The increment to use between min and max
          */
         function add(
-            schedules: LaterDate[],
-            sched: LaterDate,
-            name: Exclude<keyof LaterDate, 'isUTC'>,
+            schedules: IScheduleDef[],
+            sched: IScheduleDef,
+            name: Exclude<keyof IScheduleDef, 'isUTC'>,
             min: number,
             max: number,
             inc?: number,
@@ -682,7 +682,12 @@ export const parse: IParse = {
          * @param {Int} value: The value to add (x of x#y or xL)
          * @param {Int} hash: The hash value to add (y of x#y)
          */
-        function addHash(schedules: LaterDate[], curSched: LaterDate, value: number, hash: number) {
+        function addHash(
+            schedules: IScheduleDef[],
+            curSched: IScheduleDef,
+            value: number,
+            hash: number,
+        ) {
             // if there are any existing day of week constraints that
             // aren't equal to the one we're adding, create a new
             // composite schedule
@@ -697,9 +702,14 @@ export const parse: IParse = {
             return curSched;
         }
 
-        function addWeekday(schedules: LaterDate[], s: ISchedule, curSched: LaterDate, value: number) {
-            var except1: LaterDate = {} as LaterDate,
-                except2: LaterDate = {} as LaterDate;
+        function addWeekday(
+            schedules: IScheduleDef[],
+            s: ISchedule,
+            curSched: IScheduleDef,
+            value: number,
+        ) {
+            var except1: IScheduleDef = {} as IScheduleDef,
+                except2: IScheduleDef = {} as IScheduleDef;
             if (value === 1) {
                 // cron doesn't pass month boundaries, so if 1st is a
                 // weekend then we need to use 2nd or 3rd instead
@@ -737,10 +747,10 @@ export const parse: IParse = {
          * @param {Int} offset: The offset to apply to the cron value
          */
         function addRange(
-            schedules: LaterDate[],
+            schedules: IScheduleDef[],
             item: string,
-            curSched: LaterDate,
-            name: keyof LaterDate,
+            curSched: IScheduleDef,
+            name: keyof IScheduleDef,
             min: number,
             max: number,
             offset: number,
@@ -777,7 +787,7 @@ export const parse: IParse = {
         function parse(
             item: string,
             s: ISchedule,
-            name: keyof LaterDate,
+            name: keyof IScheduleDef,
             min: number,
             max: number,
             offset: number,
@@ -1117,13 +1127,13 @@ export const parse: IParse = {
                         parseOnThe(r);
                         break;
                     case TOKENTYPES.on:
-                        r.on(parseRanges(TOKENTYPES.dayName)).dayOfWeek();
+                        r.on(...parseRanges(TOKENTYPES.dayName)).dayOfWeek();
                         break;
                     case TOKENTYPES.of:
-                        r.on(parseRanges(TOKENTYPES.monthName)).month();
+                        r.on(...parseRanges(TOKENTYPES.monthName)).month();
                         break;
                     case TOKENTYPES['in']:
-                        r.on(parseRanges(TOKENTYPES.yearIndex)).year();
+                        r.on(...parseRanges(TOKENTYPES.yearIndex)).year();
                         break;
                     case TOKENTYPES.at:
                         r.on(parseTokenValue(TOKENTYPES.time)).time();
@@ -1246,7 +1256,7 @@ export const parse: IParse = {
          *
          * @param {TokenType} tokenType: The type of token to parse
          */
-        function parseTokenValue(tokenType: ITOKENTYPES) {
+        function parseTokenValue(tokenType: ITOKENTYPES): string {
             return parseToken(tokenType).text;
         }
 

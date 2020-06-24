@@ -8,7 +8,7 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
-const day: IConstraint<LaterDate> = {
+export const day: IConstraint<LaterDate> = {
     /**
      * The name of this constraint.
      */
@@ -115,5 +115,7 @@ const day: IConstraint<LaterDate> = {
         );
     },
 };
+
+export const D = day;
 
 later.day = later.D = day;

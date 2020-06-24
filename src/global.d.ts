@@ -93,7 +93,7 @@ declare interface IRecur {
      * @param {Int} args: One or more valid instances
      * @api public
      */
-    on: (args_0: number, args_1: number, args_2: number, args_3: number) => any;
+    on: (...args: (string | number)[]) => any;
     /**
      * Specifies the recurring interval of a time period that are valid.
      * Must be followed by the desired time period (minute(), hour(),
@@ -105,7 +105,7 @@ declare interface IRecur {
      * @param {Int} x: Recurring interval
      * @api public
      */
-    every: (x: number) => any;
+    every: (x: string) => any;
     /**
      * Specifies the minimum valid value.  For example, to specify a schedule
      * that is valid for all hours after four:
@@ -115,7 +115,7 @@ declare interface IRecur {
      * @param {Int} x: Recurring interval
      * @api public
      */
-    after: (x: number) => any;
+    after: (x: string) => any;
     /**
      * Specifies the maximum valid value.  For example, to specify a schedule
      * that is valid for all hours before four:
@@ -125,7 +125,7 @@ declare interface IRecur {
      * @param {Int} x: Recurring interval
      * @api public
      */
-    before: (x: number) => any;
+    before: (x: string) => any;
     /**
      * Specifies that the first instance of a time period is valid. Must
      * be followed by the desired time period (minute(), hour(), etc).
@@ -328,7 +328,7 @@ declare interface IRecur {
      *
      * @api public
      */
-    customPeriod: (id: string) => any;
+    customPeriod: (id: keyof ILaterGlobalIndex) => any;
     /**
      * Modifies a recurring interval (specified using every) to start
      * at a given offset.  To create a schedule for every 5 minutes
@@ -381,7 +381,6 @@ declare interface IRecur {
      */
     except: () => any;
 }
-
 declare interface IParse {
     recur(): IRecur;
     cron(expr: string, hasSeconds: boolean): ISchedule;
@@ -554,6 +553,75 @@ declare interface IScheduleDef {
     */
 }
 
+declare interface IScheduleResult {
+    /**
+     * Returns true if d is a valid occurrence of the current schedule.
+     *
+     * @param {Date} d: The date to check
+     */
+    isValid: (d: LaterDate) => boolean;
+    /**
+     * Finds the next valid instance or instances of the current schedule,
+     * optionally between a specified start and end date. Start date is
+     * Date.now() by default, end date is unspecified. Start date must be
+     * smaller than end date.
+     *
+     * @param {Integer} count: The number of instances to return
+     * @param {Date} startDate: The earliest a valid instance can occur
+     * @param {Date} endDate: The latest a valid instance can occur
+     */
+    next: (
+        count: number,
+        startDate: LaterDate,
+        endDate?: LaterDate,
+    ) => Date | (Date | (Date | undefined)[] | undefined)[] | undefined;
+    /**
+     * Finds the previous valid instance or instances of the current schedule,
+     * optionally between a specified start and end date. Start date is
+     * Date.now() by default, end date is unspecified. Start date must be
+     * greater than end date.
+     *
+     * @param {Integer} count: The number of instances to return
+     * @param {Date} startDate: The earliest a valid instance can occur
+     * @param {Date} endDate: The latest a valid instance can occur
+     */
+    prev: (
+        count: number,
+        startDate: LaterDate,
+        endDate: LaterDate,
+    ) => Date | (Date | (Date | undefined)[] | undefined)[] | undefined;
+    /**
+     * Finds the next valid range or ranges of the current schedule,
+     * optionally between a specified start and end date. Start date is
+     * Date.now() by default, end date is unspecified. Start date must be
+     * greater than end date.
+     *
+     * @param {Integer} count: The number of ranges to return
+     * @param {Date} startDate: The earliest a valid range can occur
+     * @param {Date} endDate: The latest a valid range can occur
+     */
+    nextRange: (
+        count: number,
+        startDate: LaterDate,
+        endDate: LaterDate,
+    ) => Date | (Date | (Date | undefined)[] | undefined)[] | undefined;
+    /**
+     * Finds the previous valid range or ranges of the current schedule,
+     * optionally between a specified start and end date. Start date is
+     * Date.now() by default, end date is unspecified. Start date must be
+     * greater than end date.
+     *
+     * @param {Integer} count: The number of ranges to return
+     * @param {Date} startDate: The earliest a valid range can occur
+     * @param {Date} endDate: The latest a valid range can occur
+     */
+    prevRange: (
+        count: number,
+        startDate: LaterDate,
+        endDate: LaterDate,
+    ) => Date | (Date | (Date | undefined)[] | undefined)[] | undefined;
+}
+
 declare type DIRECTION = 'next' | 'prev';
 declare interface IModifier {
     after(constraint: IConstraint, values: any[]): IConstraint;
@@ -591,14 +659,30 @@ declare interface ICompiledSchedule {
      */
     tickStart: (date: LaterDate) => LaterDate;
 }
-
+declare interface ISchedule {
+    schedules: IScheduleDef[];
+    exceptions: IScheduleDef[];
+}
 declare type CompileFn = (scheduleDef: IScheduleDef) => ICompiledSchedule;
+
+declare interface LaterSetTimeoutFnResult {
+    isDone: () => boolean;
+    /**
+     * Clears the timeout.
+     */
+    clear: () => void;
+}
+declare type LaterSetTimeoutFn = (fn: () => void, sched: ISchedule) => LaterSetTimeoutFnResult;
+
 declare interface ILaterGlobal {
     parse: IParse;
     array: ILaterArray;
     modifier: IModifier;
 
-    compile(schedDef: LaterDate): ICompiledSchedule;
+    setTimeout: LaterSetTimeoutFn;
+    setInterval: LaterSetTimeoutFn;
+    schedule(scheduled: ISchedule): IScheduleResult;
+    compile: CompileFn;
     build(
         year: number,
         month: number,
@@ -628,12 +712,19 @@ declare interface ILaterGlobal {
     dy: IConstraint;
     fd: IConstraint;
     h: IConstraint;
+    hour: IConstraint;
     m: IConstraint;
+    minute: IConstraint;
     M: IConstraint;
+    month: IConstraint;
     s: IConstraint;
+    second: IConstraint;
     t: IConstraint;
+    time: IConstraint;
     wm: IConstraint;
+    weekOfMonth: IConstraint;
     wy: IConstraint;
+    weekOfYear: IConstraint;
     Y: IConstraint;
     dayOfYear: IConstraint;
     fullDate: IConstraint;
