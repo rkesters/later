@@ -10,6 +10,12 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
+import {IConstraint} from "./contraint";
+import { dw } from "./dayofweek";
+import { D } from "./day";
+import { M } from "./month";
+import { date } from "../date/date";
+import { Y } from "./year";
 export const wm: IConstraint = {
     /**
      * The name of this constraint.
@@ -31,7 +37,7 @@ export const wm: IConstraint = {
         return (
             d.wm ||
             (d.wm =
-                (later.D.val(d) + (later.dw.val(later.M.start(d)) - 1) + (7 - later.dw.val(d))) / 7)
+                (D.val(d) + (dw.val(M.start(d)) - 1) + (7 - dw.val(d))) / 7)
         );
     },
 
@@ -42,7 +48,7 @@ export const wm: IConstraint = {
      * @param {Integer} val: The value to validate
      */
     isValid: function (d, val) {
-        return later.wm.val(d) === (val || later.wm.extent(d)[1]);
+        return wm.val(d) === (val || wm.extent(d)[1]);
     },
 
     /**
@@ -56,9 +62,9 @@ export const wm: IConstraint = {
             d.wmExtent ||
             (d.wmExtent = [
                 1,
-                (later.D.extent(d)[1] +
-                    (later.dw.val(later.M.start(d)) - 1) +
-                    (7 - later.dw.val(later.M.end(d)))) /
+                (D.extent(d)[1] +
+                    (dw.val(M.start(d)) - 1) +
+                    (7 - dw.val(M.end(d)))) /
                     7,
             ])
         );
@@ -72,10 +78,10 @@ export const wm: IConstraint = {
     start: function (d) {
         return (
             d.wmStart ||
-            (d.wmStart = later.date.next(
-                later.Y.val(d),
-                later.M.val(d),
-                Math.max(later.D.val(d) - later.dw.val(d) + 1, 1),
+            (d.wmStart = date.next(
+                Y.val(d),
+                M.val(d),
+                Math.max(D.val(d) - dw.val(d) + 1, 1),
             ))
         );
     },
@@ -88,10 +94,10 @@ export const wm: IConstraint = {
     end: function (d) {
         return (
             d.wmEnd ||
-            (d.wmEnd = later.date.prev(
-                later.Y.val(d),
-                later.M.val(d),
-                Math.min(later.D.val(d) + (7 - later.dw.val(d)), later.D.extent(d)[1]),
+            (d.wmEnd = date.prev(
+                Y.val(d),
+                M.val(d),
+                Math.min(D.val(d) + (7 - dw.val(d)), D.extent(d)[1]),
             ))
         );
     },
@@ -105,18 +111,18 @@ export const wm: IConstraint = {
      * @param {int} val: The desired value, must be within extent
      */
     next: function (d, val) {
-        val = val > later.wm.extent(d)[1] ? 1 : val;
+        val = val > wm.extent(d)[1] ? 1 : val;
 
-        var month = later.date.nextRollover(d, val, later.wm, later.M),
-            wmMax = later.wm.extent(month)[1];
+        var month = date.nextRollover(d, val, wm, M),
+            wmMax = wm.extent(month)[1];
 
         val = val > wmMax ? 1 : val || wmMax;
 
         // jump to the Sunday of the desired week, set to 1st of month for week 1
-        return later.date.next(
-            later.Y.val(month),
-            later.M.val(month),
-            Math.max(1, (val - 1) * 7 - (later.dw.val(month) - 2)),
+        return date.next(
+            Y.val(month),
+            M.val(month),
+            Math.max(1, (val - 1) * 7 - (dw.val(month) - 2)),
         );
     },
 
@@ -129,21 +135,21 @@ export const wm: IConstraint = {
      * @param {int} val: The desired value, must be within extent
      */
     prev: function (d, val) {
-        var month = later.date.prevRollover(d, val, later.wm, later.M),
-            wmMax = later.wm.extent(month)[1];
+        var month = date.prevRollover(d, val, wm, M),
+            wmMax = wm.extent(month)[1];
 
         val = val > wmMax ? wmMax : val || wmMax;
 
         // jump to the end of Saturday of the desired week
-        return later.wm.end(
-            later.date.next(
-                later.Y.val(month),
-                later.M.val(month),
-                Math.max(1, (val - 1) * 7 - (later.dw.val(month) - 2)),
+        return wm.end(
+            date.next(
+                Y.val(month),
+                M.val(month),
+                Math.max(1, (val - 1) * 7 - (dw.val(month) - 2)),
             ),
         );
     },
 };
 
 export const weekOfMonth = wm;
-later.weekOfMonth = later.wm = wm;
+

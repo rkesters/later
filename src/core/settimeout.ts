@@ -11,60 +11,73 @@
  */
 
 import * as _ from 'lodash';
+import { LaterDate } from '../date/date';
+import { ISchedule, scheduleFactory } from './schedule';
+import { Base } from '../later-base';
 
-export function laterSetTimeout(fn: () => void, sched: ISchedule): LaterSetTimeoutFnResult {
-    var s = later.schedule(sched),
-        t: ReturnType<typeof setTimeout> | undefined;
 
-    scheduleTimeout();
-
+export interface LaterSetTimeoutFnResult {
+    isDone: () => boolean;
     /**
-     * Schedules the timeout to occur. If the next occurrence is greater than the
-     * max supported delay (2147483647 ms) than we delay for that amount before
-     * attempting to schedule the timeout again.
+     * Clears the timeout.
      */
-    function scheduleTimeout() {
-        var now = new LaterDate(),
-            next = s.next(2, now);
-
-        if (!_.isArray(next)) {
-            return;
-        }
-        if (!next[0]) {
-            t = undefined;
-            return;
-        }
-
-        if (_.isArray(next[0]) || _.isArray(next[1])) {
-            return;
-        }
-
-        var diff = next[0]?.getTime() - now.getTime();
-
-        // minimum time to fire is one second, use next occurrence instead
-        if (diff < 1000) {
-            diff = next[1] ? next[1].getTime() - now.getTime() : 1000;
-        }
-
-        if (diff < 2147483647) {
-            t = setTimeout(fn, diff);
-        } else {
-            t = setTimeout(scheduleTimeout, 2147483647);
-        }
-    }
-
-    return {
-        isDone: function () {
-            return !t;
-        },
-
-        /**
-         * Clears the timeout.
-         */
-        clear: function () {
-            t && clearTimeout(t);
-        },
-    };
+    clear: () => void;
 }
 
-later.setTimeout = laterSetTimeout;
+export function laterSetTimeoutFactory(later: Base) {
+    const schedule = scheduleFactory(later);
+    return function (fn: () => void, sched: ISchedule): LaterSetTimeoutFnResult {
+        var s = schedule(sched),
+            t: ReturnType<typeof setTimeout> | undefined;
+
+        scheduleTimeout();
+
+        /**
+         * Schedules the timeout to occur. If the next occurrence is greater than the
+         * max supported delay (2147483647 ms) than we delay for that amount before
+         * attempting to schedule the timeout again.
+         */
+        function scheduleTimeout() {
+            var now = new LaterDate(),
+                next = s.next(2, now);
+
+            if (!_.isArray(next)) {
+                return;
+            }
+            if (!next[0]) {
+                t = undefined;
+                return;
+            }
+
+            if (_.isArray(next[0]) || _.isArray(next[1])) {
+                return;
+            }
+
+            var diff = next[0]?.getTime() - now.getTime();
+
+            // minimum time to fire is one second, use next occurrence instead
+            if (diff < 1000) {
+                diff = next[1] ? next[1].getTime() - now.getTime() : 1000;
+            }
+
+            if (diff < 2147483647) {
+                t = setTimeout(fn, diff);
+            } else {
+                t = setTimeout(scheduleTimeout, 2147483647);
+            }
+        }
+
+        return {
+            isDone: function () {
+                return !t;
+            },
+
+            /**
+             * Clears the timeout.
+             */
+            clear: function () {
+                t && clearTimeout(t);
+            },
+        };
+    };
+}

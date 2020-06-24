@@ -8,6 +8,11 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
+import {IConstraint} from "./contraint";
+import { date } from "../date/date";
+import { Y } from "./year";
+import { M } from "./month";
+import { D } from "./day";
 export const h: IConstraint = {
     /**
      * The name of this constraint.
@@ -26,7 +31,7 @@ export const h: IConstraint = {
      * @param {Date} d: The date to calculate the value of
      */
     val: function (d) {
-        return d.h || (d.h = later.date.getHour.call(d));
+        return d.h || (d.h = date.getHour.call(d));
     },
 
     /**
@@ -36,7 +41,7 @@ export const h: IConstraint = {
      * @param {Integer} val: The value to validate
      */
     isValid: function (d, val) {
-        return later.h.val(d) === val;
+        return h.val(d) === val;
     },
 
     /**
@@ -54,11 +59,11 @@ export const h: IConstraint = {
     start: function (d) {
         return (
             d.hStart ||
-            (d.hStart = later.date.next(
-                later.Y.val(d),
-                later.M.val(d),
-                later.D.val(d),
-                later.h.val(d),
+            (d.hStart = date.next(
+                Y.val(d),
+                M.val(d),
+                D.val(d),
+                h.val(d),
             ))
         );
     },
@@ -71,11 +76,11 @@ export const h: IConstraint = {
     end: function (d) {
         return (
             d.hEnd ||
-            (d.hEnd = later.date.prev(
-                later.Y.val(d),
-                later.M.val(d),
-                later.D.val(d),
-                later.h.val(d),
+            (d.hEnd = date.prev(
+                Y.val(d),
+                M.val(d),
+                D.val(d),
+                h.val(d),
             ))
         );
     },
@@ -89,19 +94,19 @@ export const h: IConstraint = {
     next: function (d, val) {
         val = val > 23 ? 0 : val;
 
-        var next = later.date.next(
-            later.Y.val(d),
-            later.M.val(d),
-            later.D.val(d) + (val <= later.h.val(d) ? 1 : 0),
+        var next = date.next(
+            Y.val(d),
+            M.val(d),
+            D.val(d) + (val <= h.val(d) ? 1 : 0),
             val,
         );
 
         // correct for passing over a daylight savings boundry
-        if (!later.date.isUTC && next.getTime() <= d.getTime()) {
-            next = later.date.next(
-                later.Y.val(next),
-                later.M.val(next),
-                later.D.val(next),
+        if (!date.isUTC && next.getTime() <= d.getTime()) {
+            next = date.next(
+                Y.val(next),
+                M.val(next),
+                D.val(next),
                 val + 1,
             );
         }
@@ -118,14 +123,13 @@ export const h: IConstraint = {
     prev: function (d, val) {
         val = val > 23 ? 23 : val;
 
-        return later.date.prev(
-            later.Y.val(d),
-            later.M.val(d),
-            later.D.val(d) + (val >= later.h.val(d) ? -1 : 0),
+        return date.prev(
+            Y.val(d),
+            M.val(d),
+            D.val(d) + (val >= h.val(d) ? -1 : 0),
             val,
         );
     },
 };
 
 export const hour = h;
-later.hour = later.h = h;

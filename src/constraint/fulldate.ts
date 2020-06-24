@@ -8,6 +8,9 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
+import {IConstraint} from "./contraint";
+import { LaterDate } from "../date/date";
+import { NEVER } from "../date/constant";
 export const fd: IConstraint = {
     /**
      * The name of this constraint.
@@ -36,7 +39,7 @@ export const fd: IConstraint = {
      * @param {Integer} val: The value to validate
      */
     isValid: function (d, val) {
-        return later.fd.val(d) === val;
+        return fd.val(d) === val;
     },
 
     /**
@@ -71,7 +74,7 @@ export const fd: IConstraint = {
      * @param {int} val: The desired value, must be within extent
      */
     next: function (d, val) {
-        return later.fd.val(d) < val ? new LaterDate(val) : later.NEVER;
+        return fd.val(d) < val ? new LaterDate(val) : NEVER;
     },
 
     /**
@@ -81,8 +84,7 @@ export const fd: IConstraint = {
      * @param {int} val: The desired value, must be within extent
      */
     prev: function (d, val) {
-        return later.fd.val(d) > val ? new LaterDate(val) : later.NEVER;
+        return fd.val(d) > val ? new LaterDate(val) : NEVER;
     },
 };
 export const fullDate = fd;
-later.fullDate = later.fd = fd;

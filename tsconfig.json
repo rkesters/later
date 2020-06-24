@@ -1,16 +1,17 @@
 {
     "compilerOptions": {
         "outDir": "./dist/",
-        "rootDir": "./src",
         "strict": true,
         "module": "commonjs",
         "target": "es6",
         "allowJs": false,
-        "sourceMap": true,
+        "inlineSourceMap": true,
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "Node",
         "declaration": true,
-        "lib": ["ES2017"]
+        "lib": ["ES2017"],
+        "resolveJsonModule": true
     },
-    "exclude": ["./dist"]
+    "exclude": ["./tests/", "./node_modules/", "./dist/"],
+    "include": ["./src", "package.json"]
 }

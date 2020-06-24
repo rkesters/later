@@ -8,6 +8,11 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
+import {IConstraint} from "./contraint";
+import { date } from "../date/date";
+import { D } from "./day";
+import { Y } from "./year";
+import { M } from "./month";
 export const dayOfWeek: IConstraint = {
     /**
      * The name of this constraint.
@@ -26,7 +31,7 @@ export const dayOfWeek: IConstraint = {
      * @param {Date} d: The date to calculate the value of
      */
     val: function (d) {
-        return d.dw || (d.dw = later.date.getDay.call(d) + 1);
+        return d.dw || (d.dw = date.getDay.call(d) + 1);
     },
 
     /**
@@ -36,7 +41,7 @@ export const dayOfWeek: IConstraint = {
      * @param {Integer} val: The value to validate
      */
     isValid: function (d, val) {
-        return later.dw.val(d) === (val || 7);
+        return dw.val(d) === (val || 7);
     },
 
     /**
@@ -53,7 +58,7 @@ export const dayOfWeek: IConstraint = {
      * @param {Date} d: The specified date
      */
     start: function (d) {
-        return later.D.start(d);
+        return D.start(d);
     },
 
     /**
@@ -62,7 +67,7 @@ export const dayOfWeek: IConstraint = {
      * @param {Date} d: The specified date
      */
     end: function (d) {
-        return later.D.end(d);
+        return D.end(d);
     },
 
     /**
@@ -74,10 +79,10 @@ export const dayOfWeek: IConstraint = {
     next: function (d, val) {
         val = val > 7 ? 1 : val || 7;
 
-        return later.date.next(
-            later.Y.val(d),
-            later.M.val(d),
-            later.D.val(d) + (val - later.dw.val(d)) + (val <= later.dw.val(d) ? 7 : 0),
+        return date.next(
+            Y.val(d),
+            M.val(d),
+            D.val(d) + (val - dw.val(d)) + (val <= dw.val(d) ? 7 : 0),
         );
     },
 
@@ -90,14 +95,13 @@ export const dayOfWeek: IConstraint = {
     prev: function (d, val) {
         val = val > 7 ? 7 : val || 7;
 
-        return later.date.prev(
-            later.Y.val(d),
-            later.M.val(d),
-            later.D.val(d) + (val - later.dw.val(d)) + (val >= later.dw.val(d) ? -7 : 0),
+        return date.prev(
+            Y.val(d),
+            M.val(d),
+            D.val(d) + (val - dw.val(d)) + (val >= dw.val(d) ? -7 : 0),
         );
     },
 };
 
 export const d = dayOfWeek;
 export const dw = dayOfWeek;
-later.dayOfWeek = later.dw = later.d = dayOfWeek;

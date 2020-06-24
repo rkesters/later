@@ -1,6 +1,14 @@
+export interface ILaterArray {
+    next(val: number, values: number[], extent: number[]): number;
+    nextInvalid(val: number, values: number[], extent: number[]): number | undefined;
+    prev(val: number, values: number[], extent: number[]): number;
+    prevInvalid(val: number, values: number[], extent: number[]): number | undefined;
+    sort(arr: number[], zeroIsLast?: boolean): void;
+}
+
 export const array: ILaterArray = {
-    next<T extends number>(val: T, values: T[], extent: T[]) {
-        let cur: T,
+    next(val: number, values: number[], extent: number[]): number {
+        let cur: number,
             zeroIsLargest = extent[0] !== 0,
             nextIdx = 0;
 
@@ -21,7 +29,7 @@ export const array: ILaterArray = {
 
         return values[nextIdx];
     },
-    nextInvalid<T extends number>(val: T, values: T[], extent: T[]) {
+    nextInvalid(val: number, values: number[], extent: number[]): number | undefined {
         let min = extent[0],
             max = extent[1],
             len = values.length,
@@ -48,7 +56,7 @@ export const array: ILaterArray = {
 
         return next;
     },
-    prev<T extends number>(val: T, values: T[], extent: T[]) {
+    prev(val: number, values: number[], extent: number[]): number {
         var cur,
             len = values.length,
             zeroIsLargest = extent[0] !== 0,
@@ -71,7 +79,7 @@ export const array: ILaterArray = {
 
         return values[prevIdx];
     },
-    prevInvalid<T extends number>(val: T, values: T[], extent: T[]) {
+    prevInvalid(val: number, values: number[], extent: number[]): number | undefined {
         var min = extent[0],
             max = extent[1],
             len = values.length,
@@ -99,14 +107,13 @@ export const array: ILaterArray = {
 
         return next;
     },
-    sort<T extends number>(arr: T[], zeroIsLast: boolean) {
+    sort(arr: number[], zeroIsLast: boolean = false): void {
         arr.sort(function (a, b) {
             return +a - +b;
         });
 
         if (zeroIsLast && arr[0] === 0) {
-            arr.push(<T>arr.shift());
+            arr.push(<number>arr.shift());
         }
     },
 };
-later.array = array;

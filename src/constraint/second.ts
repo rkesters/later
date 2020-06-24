@@ -8,6 +8,14 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
+import {IConstraint} from "./contraint";
+import { date, LaterDate } from "../date/date";
+import { m } from "./minute";
+import { h } from "./hour";
+import { M } from "./month";
+import { Y } from "./year";
+import { D } from "./day";
+import { SEC } from "../date/constant";
 export const s: IConstraint = {
     /**
      * The name of this constraint.
@@ -26,7 +34,7 @@ export const s: IConstraint = {
      * @param {Date} d: The date to calculate the value of
      */
     val: function (d) {
-        return d.s || (d.s = later.date.getSec.call(d));
+        return d.s || (d.s = date.getSec.call(d));
     },
 
     /**
@@ -36,7 +44,7 @@ export const s: IConstraint = {
      * @param {Integer} val: The value to validate
      */
     isValid: function (d, val) {
-        return later.s.val(d) === val;
+        return s.val(d) === val;
     },
 
     /**
@@ -71,13 +79,13 @@ export const s: IConstraint = {
      * @param {int} val: The desired value, must be within extent
      */
     next: function (d, val) {
-        var s = later.s.val(d),
-            inc = val > 59 ? 60 - s : val <= s ? 60 - s + val : val - s,
-            next = new LaterDate(d.getTime() + inc * later.SEC);
+        let ss: number = s.val(d),
+            inc = val > 59 ? 60 - ss : val <= ss ? 60 - ss + val : val - ss,
+            next = new LaterDate(d.getTime() + inc * SEC);
 
         // correct for passing over a daylight savings boundry
-        if (!later.date.isUTC && next.getTime() <= d.getTime()) {
-            next = new LaterDate(d.getTime() + (inc + 7200) * later.SEC);
+        if (!date.isUTC && next.getTime() <= d.getTime()) {
+            next = new LaterDate(d.getTime() + (inc + 7200) * SEC);
         }
 
         return next;
@@ -92,16 +100,16 @@ export const s: IConstraint = {
     prev: function (d, val) {
         val = val > 59 ? 59 : val;
 
-        return later.date.prev(
-            later.Y.val(d),
-            later.M.val(d),
-            later.D.val(d),
-            later.h.val(d),
-            later.m.val(d) + (val >= later.s.val(d) ? -1 : 0),
+        return date.prev(
+            Y.val(d),
+            M.val(d),
+            D.val(d),
+            h.val(d),
+            m.val(d) + (val >= s.val(d) ? -1 : 0),
             val,
         );
     },
 };
 
 export const second = s;
-later.second = later.s = s;
+

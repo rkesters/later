@@ -8,7 +8,13 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
-export const day: IConstraint<LaterDate> = {
+import { IConstraint } from './contraint';
+import { date } from '../date/date';
+import { DAYS_IN_MONTH } from '../date/constant';
+import { M } from './month';
+import { dy } from './dayofyear';
+import { Y } from './year';
+export const day: IConstraint = {
     /**
      * The name of this constraint.
      */
@@ -26,7 +32,7 @@ export const day: IConstraint<LaterDate> = {
      * @param {Date} d: The date to calculate the value of
      */
     val: function (d) {
-        return d.D || (d.D = later.date.getDate.call(d));
+        return d.D || (d.D = date.getDate.call(d));
     },
 
     /**
@@ -36,7 +42,7 @@ export const day: IConstraint<LaterDate> = {
      * @param {Integer} val: The value to validate
      */
     isValid: function (d, val) {
-        return later.D.val(d) === (val || later.D.extent(d)[1]);
+        return D.val(d) === (val || D.extent(d)[1]);
     },
 
     /**
@@ -48,10 +54,10 @@ export const day: IConstraint<LaterDate> = {
     extent: function (d) {
         if (d.DExtent) return d.DExtent;
 
-        var month = later.M.val(d),
-            max = later.DAYS_IN_MONTH[month - 1];
+        var month = M.val(d),
+            max = DAYS_IN_MONTH[month - 1];
 
-        if (month === 2 && later.dy.extent(d)[1] === 366) {
+        if (month === 2 && dy.extent(d)[1] === 366) {
             max = max + 1;
         }
 
@@ -64,9 +70,7 @@ export const day: IConstraint<LaterDate> = {
      * @param {Date} d: The specified date
      */
     start: function (d) {
-        return (
-            d.DStart || (d.DStart = later.date.next(later.Y.val(d), later.M.val(d), later.D.val(d)))
-        );
+        return d.DStart || (d.DStart = date.next(Y.val(d), M.val(d), D.val(d)));
     },
 
     /**
@@ -75,7 +79,7 @@ export const day: IConstraint<LaterDate> = {
      * @param {Date} d: The specified date
      */
     end: function (d) {
-        return d.DEnd || (d.DEnd = later.date.prev(later.Y.val(d), later.M.val(d), later.D.val(d)));
+        return d.DEnd || (d.DEnd = date.prev(Y.val(d), M.val(d), D.val(d)));
     },
 
     /**
@@ -87,13 +91,13 @@ export const day: IConstraint<LaterDate> = {
      * @param {int} val: The desired value, must be within extent
      */
     next: function (d, val) {
-        val = val > later.D.extent(d)[1] ? 1 : val;
-        const month = later.date.nextRollover(d, val, later.D, later.M),
-            DMax = later.D.extent(month)[1];
+        val = val > D.extent(d)[1] ? 1 : val;
+        const month = date.nextRollover(d, val, D, M),
+            DMax = D.extent(month)[1];
 
         val = val > DMax ? 1 : val || DMax;
 
-        return later.date.next(later.Y.val(month), later.M.val(month), val);
+        return date.next(Y.val(month), M.val(month), val);
     },
 
     /**
@@ -105,17 +109,13 @@ export const day: IConstraint<LaterDate> = {
      * @param {int} val: The desired value, must be within extent
      */
     prev: function (d, val) {
-        var month = later.date.prevRollover(d, val, later.D, later.M),
-            DMax = later.D.extent(month)[1];
+        var month = date.prevRollover(d, val, D, M),
+            DMax = D.extent(month)[1];
 
-        return later.date.prev(
-            later.Y.val(month),
-            later.M.val(month),
-            val > DMax ? DMax : val || DMax,
-        );
+        const p = date.prev(Y.val(month), M.val(month), val > DMax ? DMax : val || DMax);
+
+        return p;
     },
 };
 
 export const D = day;
-
-later.day = later.D = day;

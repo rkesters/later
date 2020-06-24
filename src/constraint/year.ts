@@ -8,6 +8,9 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
+import {IConstraint} from "./contraint";
+import { NEVER } from "../date/constant";
+import { date } from "../date/date";
 export const Y: IConstraint = {
     /**
      * The name of this constraint.
@@ -26,7 +29,7 @@ export const Y: IConstraint = {
      * @param {Date} d: The date to calculate the value of
      */
     val: function (d) {
-        return d.Y || (d.Y = later.date.getYear.call(d));
+        return d.Y || (d.Y = date.getYear.call(d));
     },
 
     /**
@@ -36,12 +39,12 @@ export const Y: IConstraint = {
      * @param {Integer} val: The value to validate
      */
     isValid: function (d, val) {
-        return later.Y.val(d) === val;
+        return Y.val(d) === val;
     },
 
     /**
      * The minimum and maximum valid values for the year constraint.
-     * If max is past 2099, later.D.extent must be fixed to calculate leap years
+     * If max is past 2099, D.extent must be fixed to calculate leap years
      * correctly.
      */
     extent: function (dummy) {
@@ -54,7 +57,7 @@ export const Y: IConstraint = {
      * @param {Date} d: The specified date
      */
     start: function (d) {
-        return d.YStart || (d.YStart = later.date.next(later.Y.val(d)));
+        return d.YStart || (d.YStart = date.next(Y.val(d)));
     },
 
     /**
@@ -63,7 +66,7 @@ export const Y: IConstraint = {
      * @param {Date} d: The specified date
      */
     end: function (d) {
-        return d.YEnd || (d.YEnd = later.date.prev(later.Y.val(d)));
+        return d.YEnd || (d.YEnd = date.prev(Y.val(d)));
     },
 
     /**
@@ -73,9 +76,9 @@ export const Y: IConstraint = {
      * @param {int} val: The desired value, must be within extent
      */
     next: function (d, val) {
-        return val > later.Y.val(d) && val <= later.Y.extent(d)[1]
-            ? later.date.next(val)
-            : later.NEVER;
+        return val > Y.val(d) && val <= Y.extent(d)[1]
+            ? date.next(val)
+            : NEVER;
     },
 
     /**
@@ -85,11 +88,10 @@ export const Y: IConstraint = {
      * @param {int} val: The desired value, must be within extent
      */
     prev: function (d, val) {
-        return val < later.Y.val(d) && val >= later.Y.extent(d)[0]
-            ? later.date.prev(val)
-            : later.NEVER;
+        return val < Y.val(d) && val >= Y.extent(d)[0]
+            ? date.prev(val)
+            : NEVER;
     },
 };
 
 export const year = Y;
-later.year = later.Y = Y;

@@ -1,6 +1,15 @@
 import { LaterDate } from '../date/date';
+import {IConstraint} from "../constraint/contraint";
 
-function after(constraint: IConstraint, values: any[]): IConstraint {
+
+export interface IModifier {
+    after(constraint: IConstraint, values: any[]): IConstraint;
+    a(constraint: IConstraint, values: any[]): IConstraint;
+    before(constraint: IConstraint, values: any[]): IConstraint;
+    b(constraint: IConstraint, values: any[]): IConstraint;
+}
+
+export function after(constraint: IConstraint, values: any[]): IConstraint {
     var value = values[0];
 
     return {
@@ -65,7 +74,7 @@ function after(constraint: IConstraint, values: any[]): IConstraint {
     };
 }
 
-function before(constraint: IConstraint, values: any[]): IConstraint {
+export function before(constraint: IConstraint, values: any[]): IConstraint {
     var value = values[values.length - 1];
 
     return {
@@ -129,6 +138,7 @@ function before(constraint: IConstraint, values: any[]): IConstraint {
         },
     };
 }
+
 export const modifier: IModifier = {
     after,
     a: after,
@@ -136,4 +146,3 @@ export const modifier: IModifier = {
     b: before
 };
 
-later.modifier = modifier;

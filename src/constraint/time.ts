@@ -9,6 +9,14 @@
 * For all details and documentation:
 *     http://github.com/bunkat/later
 */
+import {IConstraint} from "./contraint";
+import { D } from "./day";
+import { M } from "./month";
+import { date } from "../date/date";
+import { m } from "./minute";
+import { h } from "./hour";
+import { Y } from "./year";
+import { s } from "./second";
 export const t:IConstraint = {
 
   /**
@@ -29,7 +37,7 @@ export const t:IConstraint = {
   */
   val: function(d) {
     return d.t || (d.t =
-      (later.h.val(d) * 3600) + (later.m.val(d) * 60) + (later.s.val(d)));
+      (h.val(d) * 3600) + (m.val(d) * 60) + (s.val(d)));
   },
 
   /**
@@ -39,7 +47,7 @@ export const t:IConstraint = {
   * @param {Integer} val: The value to validate
   */
   isValid: function(d, val) {
-    return later.t.val(d) === val;
+    return t.val(d) === val;
   },
 
   /**
@@ -76,22 +84,22 @@ export const t:IConstraint = {
   next: function(d, val) {
     val = val > 86399 ? 0 : val;
 
-    var next = later.date.next(
-      later.Y.val(d),
-      later.M.val(d),
-      later.D.val(d) + (val <= later.t.val(d) ? 1 : 0),
+    var next = date.next(
+      Y.val(d),
+      M.val(d),
+      D.val(d) + (val <= t.val(d) ? 1 : 0),
       0,
       0,
       val);
 
     // correct for passing over a daylight savings boundry
-    if(!later.date.isUTC && next.getTime() < d.getTime()) {
-      next = later.date.next(
-        later.Y.val(next),
-        later.M.val(next),
-        later.D.val(next),
-        later.h.val(next),
-        later.m.val(next),
+    if(!date.isUTC && next.getTime() < d.getTime()) {
+      next = date.next(
+        Y.val(next),
+        M.val(next),
+        D.val(next),
+        h.val(next),
+        m.val(next),
         val + 7200);
     }
 
@@ -107,10 +115,10 @@ export const t:IConstraint = {
   prev: function(d, val) {
     val = val > 86399 ? 86399 : val;
 
-    return later.date.next(
-      later.Y.val(d),
-      later.M.val(d),
-      later.D.val(d) + (val >= later.t.val(d) ? -1 : 0),
+    return date.next(
+      Y.val(d),
+      M.val(d),
+      D.val(d) + (val >= t.val(d) ? -1 : 0),
       0,
       0,
       val);
@@ -119,4 +127,3 @@ export const t:IConstraint = {
 };
 
 export const time  =t;
-later.time = later.t =t;

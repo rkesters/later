@@ -9,6 +9,11 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
+import {IConstraint} from "./contraint";
+import { D } from "./day";
+import { date } from "../date/date";
+import { Y } from "./year";
+import { M } from "./month";
 export const dc: IConstraint = {
     /**
      * The name of this constraint.
@@ -27,7 +32,7 @@ export const dc: IConstraint = {
      * @param {Date} d: The date to calculate the value of
      */
     val: function (d) {
-        return d.dc || (d.dc = Math.floor((later.D.val(d) - 1) / 7) + 1);
+        return d.dc || (d.dc = Math.floor((D.val(d) - 1) / 7) + 1);
     },
 
     /**
@@ -37,7 +42,7 @@ export const dc: IConstraint = {
      * @param {Integer} val: The value to validate
      */
     isValid: function (d, val: number) {
-        return later.dc.val(d) === val || (val === 0 && later.D.val(d) > later.D.extent(d)[1] - 7);
+        return dc.val(d) === val || (val === 0 && D.val(d) > D.extent(d)[1] - 7);
     },
 
     /**
@@ -47,7 +52,7 @@ export const dc: IConstraint = {
      * @param {Date} d: The date indicating the month to find the extent of
      */
     extent: function (d): [number, number] {
-        return d.dcExtent || (d.dcExtent = [1, Math.ceil(later.D.extent(d)[1] / 7)]);
+        return d.dcExtent || (d.dcExtent = [1, Math.ceil(D.extent(d)[1] / 7)]);
     },
 
     /**
@@ -59,10 +64,10 @@ export const dc: IConstraint = {
     start: function (d) {
         return (
             d.dcStart ||
-            (d.dcStart = later.date.next(
-                later.Y.val(d),
-                later.M.val(d),
-                Math.max(1, (later.dc.val(d) - 1) * 7 + 1 || 1),
+            (d.dcStart = date.next(
+                Y.val(d),
+                M.val(d),
+                Math.max(1, (dc.val(d) - 1) * 7 + 1 || 1),
             ))
         );
     },
@@ -76,10 +81,10 @@ export const dc: IConstraint = {
     end: function (d) {
         return (
             d.dcEnd ||
-            (d.dcEnd = later.date.prev(
-                later.Y.val(d),
-                later.M.val(d),
-                Math.min(later.dc.val(d) * 7, later.D.extent(d)[1]),
+            (d.dcEnd = date.prev(
+                Y.val(d),
+                M.val(d),
+                Math.min(dc.val(d) * 7, D.extent(d)[1]),
             ))
         );
     },
@@ -91,25 +96,25 @@ export const dc: IConstraint = {
      * @param {int} val: The desired value, must be within extent
      */
     next: function (d, val) {
-        val = val > later.dc.extent(d)[1] ? 1 : val;
-        var month = later.date.nextRollover(d, val, later.dc, later.M),
-            dcMax = later.dc.extent(month)[1];
+        val = val > dc.extent(d)[1] ? 1 : val;
+        var month = date.nextRollover(d, val, dc, M),
+            dcMax = dc.extent(month)[1];
 
         val = val > dcMax ? 1 : val;
 
-        var next = later.date.next(
-            later.Y.val(month),
-            later.M.val(month),
-            val === 0 ? later.D.extent(month)[1] - 6 : 1 + 7 * (val - 1),
+        var next = date.next(
+            Y.val(month),
+            M.val(month),
+            val === 0 ? D.extent(month)[1] - 6 : 1 + 7 * (val - 1),
         );
 
         if (next.getTime() <= d.getTime()) {
-            month = later.M.next(d, later.M.val(d) + 1);
+            month = M.next(d, M.val(d) + 1);
 
-            return later.date.next(
-                later.Y.val(month),
-                later.M.val(month),
-                val === 0 ? later.D.extent(month)[1] - 6 : 1 + 7 * (val - 1),
+            return date.next(
+                Y.val(month),
+                M.val(month),
+                val === 0 ? D.extent(month)[1] - 6 : 1 + 7 * (val - 1),
             );
         }
 
@@ -123,16 +128,15 @@ export const dc: IConstraint = {
      * @param {int} val: The desired value, must be within extent
      */
     prev: function (d, val) {
-        var month = later.date.prevRollover(d, val, later.dc, later.M),
-            dcMax = later.dc.extent(month)[1];
+        var month = date.prevRollover(d, val, dc, M),
+            dcMax = dc.extent(month)[1];
 
         val = val > dcMax ? dcMax : val || dcMax;
 
-        return later.dc.end(
-            later.date.prev(later.Y.val(month), later.M.val(month), 1 + 7 * (val - 1)),
+        return dc.end(
+            date.prev(Y.val(month), M.val(month), 1 + 7 * (val - 1)),
         );
     },
 };
 
 export const dayOfWeekCount = dc;
-later.dayOfWeekCount = later.dc = dc;

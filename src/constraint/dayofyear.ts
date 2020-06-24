@@ -8,6 +8,12 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
+import {IConstraint} from "./contraint";
+import { D } from "./day";
+import { Y } from "./year";
+import { DAY } from "../date/constant";
+import { date } from "../date/date";
+import { M } from "./month";
 export const dy: IConstraint = {
     /**
      * The name of this constraint.
@@ -29,7 +35,7 @@ export const dy: IConstraint = {
         return (
             d.dy ||
             (d.dy = Math.ceil(
-                1 + (later.D.start(d).getTime() - later.Y.start(d).getTime()) / later.DAY,
+                1 + (D.start(d).getTime() - Y.start(d).getTime()) / DAY,
             ))
         );
     },
@@ -41,7 +47,7 @@ export const dy: IConstraint = {
      * @param {Integer} val: The value to validate
      */
     isValid: function (d, val) {
-        return later.dy.val(d) === (val || later.dy.extent(d)[1]);
+        return dy.val(d) === (val || dy.extent(d)[1]);
     },
 
     /**
@@ -51,7 +57,7 @@ export const dy: IConstraint = {
      * @param {Date} d: The date indicating the month to find the extent of
      */
     extent: function (d) {
-        var year = later.Y.val(d);
+        var year = Y.val(d);
 
         // shortcut on finding leap years since this function gets called a lot
         // works between 1901 and 2099
@@ -64,7 +70,7 @@ export const dy: IConstraint = {
      * @param {Date} d: The specified date
      */
     start: function (d) {
-        return later.D.start(d);
+        return D.start(d);
     },
 
     /**
@@ -73,7 +79,7 @@ export const dy: IConstraint = {
      * @param {Date} d: The specified date
      */
     end: function (d) {
-        return later.D.end(d);
+        return D.end(d);
     },
 
     /**
@@ -83,13 +89,13 @@ export const dy: IConstraint = {
      * @param {int} val: The desired value, must be within extent
      */
     next: function (d, val) {
-        val = val > later.dy.extent(d)[1] ? 1 : val;
-        var year = later.date.nextRollover(d, val, later.dy, later.Y),
-            dyMax = later.dy.extent(year)[1];
+        val = val > dy.extent(d)[1] ? 1 : val;
+        var year = date.nextRollover(d, val, dy, Y),
+            dyMax = dy.extent(year)[1];
 
         val = val > dyMax ? 1 : val || dyMax;
 
-        return later.date.next(later.Y.val(year), later.M.val(year), val);
+        return date.next(Y.val(year), M.val(year), val);
     },
 
     /**
@@ -99,14 +105,13 @@ export const dy: IConstraint = {
      * @param {int} val: The desired value, must be within extent
      */
     prev: function (d, val) {
-        var year = later.date.prevRollover(d, val, later.dy, later.Y),
-            dyMax = later.dy.extent(year)[1];
+        var year = date.prevRollover(d, val, dy, Y),
+            dyMax = dy.extent(year)[1];
 
         val = val > dyMax ? dyMax : val || dyMax;
 
-        return later.date.prev(later.Y.val(year), later.M.val(year), val);
+        return date.prev(Y.val(year), M.val(year), val);
     },
 };
 
 export const dayOfYear = dy;
-later.dayOfYear = later.dy = dy;

@@ -10,35 +10,40 @@
  *     http://github.com/bunkat/later
  */
 
-function  laterSetInterval  (fn: () => void, sched: ISchedule) {
+import { Base } from '../later-base';
+import { ISchedule } from './schedule';
+import { laterSetTimeoutFactory } from "./settimeout";
 
-    var t = later.setTimeout(scheduleTimeout, sched),
-        done = t.isDone();
+export function laterSetIntervalFactory(later: Base) {
+    const laterSetTimeout = laterSetTimeoutFactory(later);
 
-    /**
-     * Executes the specified function and then sets the timeout for the next
-     * interval.
-     */
-    function scheduleTimeout() {
-        if (!done) {
-            fn();
-            t = later.setTimeout(scheduleTimeout, sched);
-        }
-    }
-
-    return {
-        isDone: function () {
-            return t.isDone();
-        },
+    return function (fn: () => void, sched: ISchedule) {
+        var t = laterSetTimeout(scheduleTimeout, sched),
+            done = t.isDone();
 
         /**
-         * Clears the timeout.
+         * Executes the specified function and then sets the timeout for the next
+         * interval.
          */
-        clear: function () {
-            done = true;
-            t.clear();
-        },
-    };
-};
+        function scheduleTimeout() {
+            if (!done) {
+                fn();
+                t = laterSetTimeout(scheduleTimeout, sched);
+            }
+        }
 
-later.setInterval = laterSetInterval;
+        return {
+            isDone: function () {
+                return t.isDone();
+            },
+
+            /**
+             * Clears the timeout.
+             */
+            clear: function () {
+                done = true;
+                t.clear();
+            },
+        };
+    }
+}

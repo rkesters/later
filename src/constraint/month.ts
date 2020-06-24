@@ -8,6 +8,9 @@
  * For all details and documentation:
  *     http://github.com/bunkat/later
  */
+import { IConstraint } from './contraint';
+import { date } from '../date/date';
+import { Y } from './year';
 export const M: IConstraint = {
     /**
      * The name of this constraint.
@@ -26,7 +29,7 @@ export const M: IConstraint = {
      * @param {Date} d: The date to calculate the value of
      */
     val: function (d) {
-        return d.M || (d.M = later.date.getMonth.call(d) + 1);
+        return d.M || (d.M = date.getMonth.call(d) + 1);
     },
 
     /**
@@ -36,7 +39,7 @@ export const M: IConstraint = {
      * @param {Integer} val: The value to validate
      */
     isValid: function (d, val) {
-        return later.M.val(d) === (val || 12);
+        return M.val(d) === (val || 12);
     },
 
     /**
@@ -53,7 +56,7 @@ export const M: IConstraint = {
      * @param {Date} d: The specified date
      */
     start: function (d) {
-        return d.MStart || (d.MStart = later.date.next(later.Y.val(d), later.M.val(d)));
+        return d.MStart || (d.MStart = date.next(Y.val(d), M.val(d)));
     },
 
     /**
@@ -62,7 +65,7 @@ export const M: IConstraint = {
      * @param {Date} d: The specified date
      */
     end: function (d) {
-        return d.MEnd || (d.MEnd = later.date.prev(later.Y.val(d), later.M.val(d)));
+        return d.MEnd || (d.MEnd = date.prev(Y.val(d), M.val(d)));
     },
 
     /**
@@ -74,7 +77,7 @@ export const M: IConstraint = {
     next: function (d, val) {
         val = val > 12 ? 1 : val || 12;
 
-        return later.date.next(later.Y.val(d) + (val > later.M.val(d) ? 0 : 1), val);
+        return date.next(Y.val(d) + (val > M.val(d) ? 0 : 1), val);
     },
 
     /**
@@ -86,9 +89,8 @@ export const M: IConstraint = {
     prev: function (d, val) {
         val = val > 12 ? 12 : val || 12;
 
-        return later.date.prev(later.Y.val(d) - (val >= later.M.val(d) ? 1 : 0), val);
+        return date.prev(Y.val(d) - (val >= M.val(d) ? 1 : 0), val);
     },
 };
 
 export const month = M;
-later.month = later.M = M;
