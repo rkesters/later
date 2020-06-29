@@ -127,6 +127,7 @@ export class LaterDate extends Date implements PIConstraintDateStruct {
     dw?: number;
     dv?: number;
     dayOfWeek?: number;
+    d?: number;
     dayOfWeekCount?: number;
     dc?: number;
     dy?: number;

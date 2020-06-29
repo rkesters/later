@@ -40,8 +40,8 @@ export interface IScheduleResult {
      * @param {Date} endDate: The latest a valid instance can occur
      */
     next: (
-        count: number,
-        startDate: LaterDate,
+        count?: number,
+        startDate?: LaterDate,
         endDate?: LaterDate,
     ) => Date | (Date | (Date | undefined)[] | undefined)[] | undefined;
     /**
@@ -124,7 +124,7 @@ export function scheduleFactory(later: Base) {
         function getInstances(
             dir: DIRECTION,
             count: number,
-            startDate: LaterDate,
+            startDate?: LaterDate,
             endDate?: LaterDate,
             isRange: boolean = false,
         ) {
@@ -570,7 +570,7 @@ export function scheduleFactory(later: Base) {
              * @param {Date} startDate: The earliest a valid instance can occur
              * @param {Date} endDate: The latest a valid instance can occur
              */
-            next: function (count: number, startDate: LaterDate, endDate?: LaterDate) {
+            next: function (count?: number, startDate?: LaterDate, endDate?: LaterDate) {
                 return getInstances('next', count || 1, startDate, endDate);
             },
 

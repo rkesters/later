@@ -22,6 +22,7 @@
         "@types/lodash": "^4.14.157",
         "@types/luxon": "^1.24.1",
         "@types/mocha": "^7.0.2",
+        "@types/moment": "^2.13.0",
         "benchmark": "latest",
         "chai": "^4.2.0",
         "copyfiles": "^2.3.0",
@@ -42,6 +43,7 @@
     },
     "dependencies": {
         "lodash": "^4.17.15",
-        "luxon": "^1.24.1"
+        "luxon": "^1.24.1",
+        "moment": "^2.27.0"
     }
 }
