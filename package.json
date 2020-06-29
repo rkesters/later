@@ -1,6 +1,6 @@
 {
     "name": "@rkesters/later",
-    "version": "1.0.1-0",
+    "version": "1.0.2-0",
     "description": "Determine later (or previous) occurrences of recurring schedules",
     "keywords": [
         "schedule",
@@ -16,7 +16,9 @@
     },
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "files": ["dist/**/*.*"],
+    "files": [
+        "dist/**/*.*"
+    ],
     "devDependencies": {
         "@types/benchmark": "^1.0.33",
         "@types/chai": "^4.2.11",
