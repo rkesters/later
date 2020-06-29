@@ -1,9 +1,3 @@
-/*
-import "start";
-
-import "end";*/
-
-import * as pkg from '../package.json';
 import { array, ILaterArray } from './array/array';
 import { IConstraint } from './constraint/contraint';
 import * as day from './constraint/day';
@@ -62,6 +56,4 @@ export class Base {
     public MIN = constants.MIN;
     public NEVER = constants.NEVER;
     public WEEK = constants.WEEK;
-
-    public version = pkg.version;
 }

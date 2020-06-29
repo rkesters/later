@@ -17,12 +17,14 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "devDependencies": {
+        "@types/benchmark": "^1.0.33",
         "@types/chai": "^4.2.11",
         "@types/lodash": "^4.14.157",
         "@types/luxon": "^1.24.1",
         "@types/mocha": "^7.0.2",
         "benchmark": "latest",
         "chai": "^4.2.0",
+        "copyfiles": "^2.3.0",
         "del-cli": "^3.0.1",
         "mocha": "^8.0.1",
         "prettier": "^2.0.5",
@@ -33,7 +35,10 @@
     "license": "MIT",
     "scripts": {
         "test": "npx mocha -r ts-node/register 'test/**/*.ts' --reporter tap",
-        "clean": "npx del-cli later*.js component.json bower.json dist"
+        "clean": "npx del-cli dist",
+        "prebuild": "npm run clean",
+        "build": "npx tsc",
+        "benchmark": "ts-node ./benchmark/constraint/val-bench.ts; ts-node ./benchmark/constraint/next-bench.ts"
     },
     "dependencies": {
         "lodash": "^4.17.15",
