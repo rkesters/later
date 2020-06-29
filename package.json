@@ -16,6 +16,7 @@
     },
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "files": ["dist/**/*.*"],
     "devDependencies": {
         "@types/benchmark": "^1.0.33",
         "@types/chai": "^4.2.11",
@@ -39,6 +40,7 @@
         "clean": "npx del-cli dist",
         "prebuild": "npm run clean",
         "build": "npx tsc",
+        "prepublish": "npm run build",
         "benchmark": "ts-node ./benchmark/constraint/val-bench.ts; ts-node ./benchmark/constraint/next-bench.ts"
     },
     "dependencies": {
