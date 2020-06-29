@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////////
 
-import * as moment from 'moment';
+import  moment from 'moment';
 import { IScheduleDef } from './core/compile';
 import { later } from './index';
 
