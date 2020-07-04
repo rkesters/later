@@ -1,36 +1,63 @@
 {
-  "name": "later",
-  "version": "1.2.0",
-  "description": "Determine later (or previous) occurrences of recurring schedules",
-  "keywords": [
-    "schedule",
-    "occurrences",
-    "recur",
-    "cron"
-  ],
-  "author": "BunKat <bill@levelstory.com>",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/bunkat/later.git"
-  },
-  "main": "index.js",
-  "browserify": "index-browserify.js",
-  "jam": {
-    "main": "later.js",
-    "shim": {
-      "exports": "later"
+    "name": "@rkesters/later",
+    "version": "1.0.3-1",
+    "description": "Determine later (or previous) occurrences of recurring schedules",
+    "keywords": [
+        "schedule",
+        "occurrences",
+        "recur",
+        "cron",
+        "typescript"
+    ],
+    "author": "Robert Kesterson <rkesters@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/rkesters/later.git"
+    },
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist/**/*.*"
+    ],
+    "devDependencies": {
+        "@types/benchmark": "^1.0.33",
+        "@types/chai": "^4.2.11",
+        "@types/lodash": "^4.14.157",
+        "@types/luxon": "^1.24.1",
+        "@types/mocha": "^7.0.2",
+        "@types/moment": "^2.13.0",
+        "@types/terser-webpack-plugin": "^3.0.0",
+        "@types/uglifyjs-webpack-plugin": "^1.1.0",
+        "@types/webpack": "^4.41.18",
+        "benchmark": "latest",
+        "chai": "^4.2.0",
+        "copyfiles": "^2.3.0",
+        "del-cli": "^3.0.1",
+        "mocha": "^8.0.1",
+        "prettier": "^2.0.5",
+        "terser-webpack-plugin": "^3.0.6",
+        "ts-loader": "^7.0.5",
+        "ts-node": "^8.10.2",
+        "tsconfig-paths": "^3.9.0",
+        "typescript": "^3.9.5",
+        "uglifyjs-webpack-plugin": "^2.2.0",
+        "webpack": "^4.43.0",
+        "webpack-cli": "^3.3.12"
+    },
+    "license": "MIT",
+    "scripts": {
+        "test": "npx mocha -r ts-node/register 'test/**/*.ts' --reporter tap",
+        "clean": "npx del-cli dist",
+        "prebuild": "npm run clean",
+        "prebuildProd": "npm run clean",
+        "prepublish": "npm run buildProd",
+        "build": "TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" npx webpack --mode=development",
+        "buildProd": "WEBPACK_MODE='production' TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" npx webpack --mode=production",
+        "benchmark": "ts-node ./benchmark/constraint/val-bench.ts; ts-node ./benchmark/constraint/next-bench.ts"
+    },
+    "dependencies": {
+        "lodash": "^4.17.15",
+        "luxon": "^1.24.1",
+        "moment": "^2.27.0"
     }
-  },
-  "devDependencies": {
-    "smash": "~0.0.8",
-    "mocha": "*",
-    "should": ">=0.6.3",
-    "jslint": "*",
-    "uglify-js": "*",
-    "benchmark": "*"
-  },
-  "license": "MIT",
-  "scripts": {
-    "test": "./node_modules/.bin/mocha test/**/*-test.js --reporter dot"
-  }
 }

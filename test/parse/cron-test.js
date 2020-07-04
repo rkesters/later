@@ -351,13 +351,15 @@ describe('Parse Cron', function() {
 
 		it('should parse last in combination', function() {
 			var p = parse('* * * * * 5L,4', true);
-			p.schedules[0].should.eql({d: [5]});
-			p.schedules[1].should.eql({d: [6], dc: [0]});
+			p.schedules[1].should.eql({d: [5]});
+			p.schedules[0].should.eql({d: [6], dc: [0]});
+
 		});
 
 		it('should parse multiple last', function() {
 			var p = parse('* * * * * 4L,5L', true);
-			p.schedules[0].should.eql({d: [5,6], dc: [0]});
+			p.schedules[0].should.eql({d: [5], dc: [0]});
+			p.schedules[1].should.eql({d: [6], dc: [0]});
 		});
 
 		it('should parse a single day instance', function() {
